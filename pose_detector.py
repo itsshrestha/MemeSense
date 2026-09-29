@@ -75,19 +75,19 @@ class PoseDetector:
         if is_pointing_self:
             return "pointing_at_self", confidence, "Who, Me? Pose (Pointing at Chest)"
 
-        # 6. Check Pointing at Others / Camera ("YOU! 🫵" Cat Meme)
+        # 6. Check Middle Finger — BEFORE pointing_at_others to prevent overlap
+        is_mid_finger, confidence = self.hand_detector.is_middle_finger(hands_data, frame_shape)
+        if is_mid_finger:
+            return "middle_finger", confidence, "Middle Finger! (Gorilla Meme)"
+
+        # 7. Check Pointing at Others / Camera ("YOU!" Cat Meme)
         is_pointing_others, confidence = self.hand_detector.is_pointing_at_others(hands_data, frame_shape)
         if is_pointing_others:
             return "pointing_at_others", confidence, "Pointing at You! Pose (Pointing Forward)"
 
-        # 7. Check Pointing Sideways (Jerry Meme)
+        # 8. Check Pointing Sideways (Jerry Meme)
         is_pointing_side, confidence = self.hand_detector.is_pointing_sideways(hands_data, frame_shape)
         if is_pointing_side:
             return "pointing_sideways", confidence, "Pointing Sideways! Pose (Jerry Meme)"
-
-        # 8. Check Middle Finger (Gorilla Flipping the Bird)
-        is_mid_finger, confidence = self.hand_detector.is_middle_finger(hands_data, frame_shape)
-        if is_mid_finger:
-            return "middle_finger", confidence, "Middle Finger! (Gorilla Meme 🦍)"
 
         return None, 0.0, "Idle View"

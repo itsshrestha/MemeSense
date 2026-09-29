@@ -334,7 +334,9 @@ class HandDetector:
 
     def is_pointing_at_others(self, hands_data, img_shape):
         """
-        Detects pointing index finger forward at camera/others ("YOU! 🫵").
+        Detects pointing index finger forward at camera/others ("YOU!").
+        Explicitly rejects the gesture if the middle finger is more extended
+        than the index finger (= middle finger salute, not a point).
         """
         if not hands_data:
             return False, 0.0
@@ -344,16 +346,20 @@ class HandDetector:
         for hand in hands_data:
             lms = hand['landmarks']
             wrist = lms[0]
-            index_tip = lms[8]
+            index_tip  = lms[8]
             middle_tip = lms[12]
-            ring_tip = lms[16]
+            ring_tip   = lms[16]
 
-            index_dist = np.hypot(index_tip['cx'] - wrist['cx'], index_tip['cy'] - wrist['cy'])
+            index_dist  = np.hypot(index_tip['cx']  - wrist['cx'], index_tip['cy']  - wrist['cy'])
             middle_dist = np.hypot(middle_tip['cx'] - wrist['cx'], middle_tip['cy'] - wrist['cy'])
-            ring_dist = np.hypot(ring_tip['cx'] - wrist['cx'], ring_tip['cy'] - wrist['cy'])
+            ring_dist   = np.hypot(ring_tip['cx']   - wrist['cx'], ring_tip['cy']   - wrist['cy'])
+
+            # Hard block: if middle finger is as long or longer than index → it's a middle finger
+            if middle_dist >= index_dist * 0.92:
+                continue
 
             is_index_extended = (index_dist > middle_dist * 1.15) or (index_dist > ring_dist * 1.15)
-            pointing_forward = index_tip['z'] < (wrist['z'] - 0.035)
+            pointing_forward  = index_tip['z'] < (wrist['z'] - 0.035)
 
             if is_index_extended and pointing_forward:
                 return True, 0.95
