@@ -86,7 +86,7 @@ numpy
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/itsshrestha/MemeSense.git
 cd Meme
 ```
 
@@ -127,7 +127,7 @@ python3 main.py
 
 | Key | Action |
 |---|---|
-| `H` | Toggle fingertip highlight dots on/off |
+| `D` | Toggle fingertip highlight dots on/off |
 | `Q` | Quit the application |
 
 The window is **resizable** — drag or maximize it to full screen.
